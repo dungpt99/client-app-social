@@ -1,14 +1,19 @@
 import React from "react";
 import { View, Text, Image, TextInput, Button, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
+import { API_BASE_URL } from "../config/urls";
 
 export default function Share() {
+  const userData = useSelector((state) => state.auth.userData);
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../public/images/noavatar.png")}
+        source={{
+          uri: userData.avatar || API_BASE_URL + "/assets/person/noavatar.png",
+        }}
         style={styles.img}
       ></Image>
-      <TextInput placeholder="Share ..." style={styles.input} />
+      <Text style={styles.input}>Share ...</Text>
     </View>
   );
 }
@@ -43,5 +48,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     fontSize: 20,
+    color: "#ccc",
   },
 });

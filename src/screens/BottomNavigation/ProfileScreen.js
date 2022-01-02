@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import { useSelector } from "react-redux";
 import Post from "../../components/Post";
 import Share from "../../components/Share";
+import HomeScreen from "./HomeScreen";
+import { API_BASE_URL } from "../../config/urls";
 
 export default function ProfileScreen() {
-  const [people, setPeople] = useState([
-    { name: "Tung", key: 1 },
-    { name: "Nam", key: 2 },
-    { name: "Dung", key: 3 },
-  ]);
+  const userData = useSelector((state) => state.auth.userData);
   return (
     <View style="styles.container">
       <ScrollView>
@@ -19,18 +18,17 @@ export default function ProfileScreen() {
           ></Image>
           <View style={styles.user}>
             <Image
-              source={require("../../../public/images/noavatar.png")}
+              source={{
+                uri:
+                  userData.avatar ||
+                  API_BASE_URL + "/assets/person/noavatar.png",
+              }}
               style={styles.avatar}
             ></Image>
-            <Text style={styles.name}>Phung Dung</Text>
+            <Text style={styles.name}>{userData.name}</Text>
           </View>
         </View>
-        <Share />
-        {people.map((item) => (
-          <View key={item.key}>
-            <Post people={item} />
-          </View>
-        ))}
+        <HomeScreen userId={userData.id} />
       </ScrollView>
     </View>
   );

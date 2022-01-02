@@ -58,14 +58,14 @@ export default function Login({ navigation }) {
         <Text style={styles.desc}>Connect to people around the world</Text>
       </View>
       <View style={styles.input}>
-        <Text style={styles.inputLabel}>Email</Text>
+        <Text style={styles.inputLabel}>Email:</Text>
         <TextInput
           placeholder="Email"
           textContentType="emailAddress"
           onChangeText={(email) => updateState({ email })}
           style={styles.textInput}
         />
-        <Text style={styles.inputLabel}>Password</Text>
+        <Text style={styles.inputLabel}>Password:</Text>
         <TextInput
           placeholder="Password"
           secureTextEntry={true}

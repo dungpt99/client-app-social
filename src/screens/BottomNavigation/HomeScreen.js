@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,23 +6,47 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import Share from "../../components/Share";
 import Post from "../../components/Post";
+import { useSelector } from "react-redux";
+import { API_BASE_URL } from "../../config/urls";
+import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
-export default function HomeScreen() {
-  const [people, setPeople] = useState([
-    { name: "Tung", key: 1 },
-    { name: "Nam", key: 2 },
-    { name: "Dung", key: 3 },
-  ]);
+export default function HomeScreen({ userId, navigation }) {
+  const userData = useSelector((state) => state.auth.userData);
+  const [posts, setPosts] = useState([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      async function fetchData() {
+        const res = userId
+          ? await axios.get(`${API_BASE_URL}/post/profile/` + userId)
+          : await axios.get(`${API_BASE_URL}/post/timeline`);
+        setPosts(
+          res.data.sort((p1, p2) => {
+            return new Date(p2.createdAt) - new Date(p1.createdAt);
+          })
+        );
+      }
+      fetchData();
+    }, [userId])
+  );
+
+  const shareScreen = () => {
+    navigation.navigate("Share");
+  };
   return (
     <View style={styles.container}>
-      <Share style={styles.share} />
+      <TouchableOpacity onPress={shareScreen} activeOpacity={1}>
+        <Share style={styles.share} />
+      </TouchableOpacity>
       <ScrollView>
-        {people.map((item) => (
-          <View key={item.key}>
-            <Post people={item} />
+        {posts.map((item) => (
+          <View key={item.id}>
+            <Post post={item} />
           </View>
         ))}
       </ScrollView>
