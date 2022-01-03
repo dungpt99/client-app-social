@@ -6,7 +6,7 @@ import Share from "../../components/Share";
 import HomeScreen from "./HomeScreen";
 import { API_BASE_URL } from "../../config/urls";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
   return (
     <View style="styles.container">

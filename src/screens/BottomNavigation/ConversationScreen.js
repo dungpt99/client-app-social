@@ -1,4 +1,5 @@
-import React from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,44 +7,24 @@ import {
   StyleSheet,
   StatusBar,
   Image,
+  Pressable,
 } from "react-native";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/urls";
 
-export default function ConversationScreen() {
-  const DATA = [
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-      title: "First Item",
-    },
-    {
-      id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-      title: "Second Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d72",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d7",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d272",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d372",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd145571e29d72",
-      title: "Third Item",
-    },
-  ];
-  const Item = ({ title }) => (
+export default function ConversationScreen({ navigation }) {
+  const [conversations, setConversations] = useState([]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const getConversation = async () => {
+        const res = await axios.get(`${API_BASE_URL}/conversation`);
+        setConversations(res.data);
+      };
+      getConversation();
+    }, [])
+  );
+
+  const Item = ({ item }) => (
     <View style={styles.item}>
       <View style={styles.information}>
         <Image
@@ -55,11 +36,16 @@ export default function ConversationScreen() {
     </View>
   );
 
-  const renderItem = ({ item }) => <Item title={item.title} />;
+  const renderItem = ({ item }) => (
+    <Pressable onPress={() => navigation.navigate("Conversation")}>
+      <Item title={item} />
+    </Pressable>
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA}
+        data={conversations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

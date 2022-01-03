@@ -41,7 +41,7 @@ export default function Tabs() {
         }}
       />
       <Tab.Screen
-        name="Conversation"
+        name="ConversationScreen"
         component={ConversationScreen}
         options={{
           tabBarLabel: "Conversation",

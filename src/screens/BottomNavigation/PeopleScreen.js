@@ -1,4 +1,5 @@
-import React from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,61 +7,61 @@ import {
   StyleSheet,
   StatusBar,
   Image,
+  TouchableWithoutFeedback,
+  Button,
+  Pressable,
 } from "react-native";
+import { API_BASE_URL } from "../../config/urls";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
-export default function PeopleScreen() {
-  const DATA = [
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-      title: "First Item",
-    },
-    {
-      id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-      title: "Second Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d72",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d7",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d272",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d372",
-      title: "Third Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd145571e29d72",
-      title: "Third Item",
-    },
-  ];
-  const Item = ({ title }) => (
+export default function PeopleScreen({ navigation }) {
+  const [friends, setFriends] = useState([]);
+  const userData = useSelector((state) => state.auth.userData);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getFriends = async () => {
+        try {
+          const res = await axios.get(`${API_BASE_URL}/user`);
+          let listFriend = [];
+          res.data.forEach((element) => {
+            if (element.id !== userData.id) {
+              listFriend.push(element);
+            }
+          });
+          setFriends(listFriend);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getFriends();
+    }, [])
+  );
+
+  const Item = ({ data }) => (
     <View style={styles.item}>
       <View style={styles.information}>
         <Image
-          source={require("../../../public/images/noavatar.png")}
+          source={{
+            uri: data.avatar || API_BASE_URL + "/assets/person/noavatar.png",
+          }}
           style={styles.img}
         ></Image>
-        <Text style={styles.name}>Phung Dung</Text>
+        <Text style={styles.name}>{data.name}</Text>
       </View>
-      <Text style={styles.title}>Follow</Text>
     </View>
   );
 
-  const renderItem = ({ item }) => <Item title={item.title} />;
+  const renderItem = ({ item }) => (
+    <Pressable onPress={() => navigation.navigate("ProfileDetail", item)}>
+      <Item data={item} />
+    </Pressable>
+  );
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA}
+        data={friends}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

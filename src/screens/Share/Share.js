@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 
 export default function Share({ navigation }) {
   const [image, setImage] = useState(null);
-  const [text, setText] = useState(null);
+  const [text, setText] = useState("");
   const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
@@ -38,6 +38,7 @@ export default function Share({ navigation }) {
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.cancelled) {
       setImage(result.uri);
     }
@@ -48,9 +49,15 @@ export default function Share({ navigation }) {
   };
 
   const handleShare = async () => {
+    let localUri = image;
+    let filename = localUri.split("/").pop();
+
+    let match = /\.(\w+)$/.exec(filename);
+    let type = match ? `image/${match[1]}` : `image`;
+
     if (image) {
       const data = new FormData();
-      data.append("file", image);
+      data.append("file", { uri: localUri, name: filename, type });
       data.append("desc", text);
       try {
         await axios.post(`${API_BASE_URL}/post/uploads`, data);

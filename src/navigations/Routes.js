@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import Register from "../screens/Register/Register";
 import * as SecureStore from "expo-secure-store";
 import Share from "../screens/Share/Share";
+import ProfileDetail from "../screens/ProfileDetail/ProfileDetail";
+import Conversation from "../components/Conversation";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +28,8 @@ export default function Routes() {
         )}
         <Stack.Screen name="Signup" component={Register} />
         <Stack.Screen name="Share" component={Share} />
+        <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+        <Stack.Screen name="Conversation" component={Conversation} />
       </Stack.Navigator>
     </NavigationContainer>
   );
