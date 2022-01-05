@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Button,
+  TouchableWithoutFeedback,
 } from "react-native";
 import HomeScreen from "../BottomNavigation/HomeScreen";
 import { API_BASE_URL } from "../../config/urls";
@@ -15,6 +16,7 @@ import { useFocusEffect } from "@react-navigation/native";
 export default function ProfileDetail({ navigation, route }) {
   const { name, avatar, imgCover, id } = route.params;
   const [followed, setFollowed] = useState(false);
+  const [conversation, setConversation] = useState("");
 
   useFocusEffect(
     React.useCallback(() => {
@@ -55,6 +57,22 @@ export default function ProfileDetail({ navigation, route }) {
     setFollowed(!followed);
   };
 
+  const handleChat = async () => {
+    try {
+      const res = await axios.post(`${API_BASE_URL}/conversation`, {
+        receiverId: id,
+      });
+      console.log(res.data);
+      if (Array.isArray(res.data)) {
+        navigation.navigate("Conversation", res.data[0]);
+      } else {
+        navigation.navigate("Conversation", res.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style="styles.container">
       <ScrollView>
@@ -77,7 +95,7 @@ export default function ProfileDetail({ navigation, route }) {
               title={followed ? "UnFollow" : "Follow"}
               onPress={handleClick}
             ></Button>
-            <Button title="Chat"></Button>
+            <Button title="Chat" onPress={handleChat}></Button>
           </View>
         </View>
         <HomeScreen userId={id} />
@@ -100,9 +118,8 @@ const styles = StyleSheet.create({
     bottom: -10,
     flexDirection: "row",
     width: "40%",
-    justifyContent: "space-around",
-    left: "50%",
-    transform: [{ translateX: -80 }],
+    justifyContent: "space-between",
+    left: 110,
   },
   imgCover: {
     maxHeight: 250,

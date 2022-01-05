@@ -7,6 +7,7 @@ import {
   StatusBar,
   TextInput,
   Button,
+  PermissionsAndroid,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -19,26 +20,55 @@ export default function Share({ navigation }) {
   const [text, setText] = useState("");
   const userData = useSelector((state) => state.auth.userData);
 
-  useEffect(() => {
+  const handleChoosePhoto = async () => {
     (async () => {
       if (Platform.OS !== "web") {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
+        } else {
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
+
+          if (!result.cancelled) {
+            setImage(result.uri);
+          }
         }
       }
     })();
-  }, []);
+  };
 
-  const handleChoosePhoto = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
+  const handleCamera = async () => {
+    // try {
+    //   const granted = await PermissionsAndroid.request(
+    //     PermissionsAndroid.PERMISSIONS.CAMERA,
+    //     {
+    //       title: "Cool Photo App Camera Permission",
+    //       message:
+    //         "Cool Photo App needs access to your camera " +
+    //         "so you can take awesome pictures.",
+    //       buttonNeutral: "Ask Me Later",
+    //       buttonNegative: "Cancel",
+    //       buttonPositive: "OK",
+    //     }
+    //   );
+    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //     console.log("You can use the camera");
+    //   } else {
+    //     console.log("Camera permission denied");
+    //   }
+    // } catch (err) {
+    //   console.warn(err);
+    // }
+    let result = await ImagePicker.launchCameraAsync({
       quality: 1,
+      allowsEditing: true,
     });
-
     if (!result.cancelled) {
       setImage(result.uri);
     }
@@ -106,6 +136,12 @@ export default function Share({ navigation }) {
             style={styles.icon}
           />
           <Text style={styles.textIcon}>Cảm xúc</Text>
+          <MaterialCommunityIcons
+            name="camera"
+            style={styles.icon}
+            onPress={handleCamera}
+          />
+          <Text style={styles.textIcon}>Máy ảnh</Text>
         </View>
       )}
       {image && (

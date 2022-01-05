@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/urls";
+import UserConversation from "../../components/UserConversation";
 
 export default function ConversationScreen({ navigation }) {
   const [conversations, setConversations] = useState([]);
@@ -24,21 +25,9 @@ export default function ConversationScreen({ navigation }) {
     }, [])
   );
 
-  const Item = ({ item }) => (
-    <View style={styles.item}>
-      <View style={styles.information}>
-        <Image
-          source={require("../../../public/images/noavatar.png")}
-          style={styles.img}
-        ></Image>
-        <Text style={styles.name}>Phung Dung</Text>
-      </View>
-    </View>
-  );
-
   const renderItem = ({ item }) => (
-    <Pressable onPress={() => navigation.navigate("Conversation")}>
-      <Item title={item} />
+    <Pressable onPress={() => navigation.navigate("Conversation", item)}>
+      <UserConversation data={item} />
     </Pressable>
   );
 

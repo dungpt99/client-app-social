@@ -14,7 +14,22 @@ export const loginCall = async (userCredential, dispatch) => {
         config.headers.authorization = `Bearer ${res.data.accessToken}`;
         return config;
       },
-      (error) => {
+      async (error) => {
+        const { config, response } = error;
+        if (response && response.status === 401) {
+          const rfToken = await SecureStore.getItemAsync("refreshToken");
+          const res = await axios.post(
+            "https://socialserver12-2021.herokuapp.com/refreshToken",
+            {
+              headers: {
+                token: rfToken,
+              },
+            }
+          );
+          await SecureStore.setItemAsync("accessToken", res.data.accessToken);
+          await SecureStore.setItemAsync("refreshToken", res.data.refreshToken);
+          config.headers.authorization = `Bearer ${res.data.accessToken}`;
+        }
         return Promise.reject(error);
       }
     );

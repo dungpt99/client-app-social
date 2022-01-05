@@ -43,7 +43,7 @@ export default function HomeScreen({ userId, navigation }) {
       <TouchableOpacity onPress={shareScreen} activeOpacity={1}>
         <Share style={styles.share} />
       </TouchableOpacity>
-      <ScrollView>
+      <ScrollView scrollsToTop={true}>
         {posts.map((item) => (
           <View key={item.id}>
             <Post post={item} />
