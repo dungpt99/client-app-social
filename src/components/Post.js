@@ -12,28 +12,33 @@ import { API_BASE_URL } from "../config/urls";
 import moment from "moment";
 import TimeAgo from "./Time";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Post({ post }) {
   const [isLiked, setIsLiked] = useState(false);
   const [like, setLike] = useState(1);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await axios.get(`${API_BASE_URL}/like/${post.id}`);
-      setLike(res.data.length);
-    };
-    fetchData();
-  }, [post.id]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        const res = await axios.get(`${API_BASE_URL}/like/${post.id}`);
+        setLike(res.data.length);
+      };
+      fetchData();
+    }, [post.id])
+  );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await axios.get(`${API_BASE_URL}/like/current/${post.id}`);
-      if (Object.entries(res.data).length !== 0) {
-        setIsLiked(true);
-      }
-    };
-    fetchData();
-  }, [post.id]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        const res = await axios.get(`${API_BASE_URL}/like/current/${post.id}`);
+        if (Object.entries(res.data).length !== 0) {
+          setIsLiked(true);
+        }
+      };
+      fetchData();
+    }, [post.id])
+  );
 
   const likeHandler = async () => {
     if (isLiked) {

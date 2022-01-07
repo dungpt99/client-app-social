@@ -55,18 +55,14 @@ export default function Conversation({ navigation, route }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // socket.emit("sendMessage", {
-      //   senderId: user.id,
-      //   receiverId: friend.id,
-      //   content: newMessage,
-      // });
-
       const newContent = {
         content: newMessage,
-        receiverId: receiver.id,
       };
 
-      const res = await axios.post(`${API_BASE_URL}/messages`, newContent);
+      const res = await axios.post(
+        `${API_BASE_URL}/messages/${id}`,
+        newContent
+      );
 
       setMessages([...messages, res.data]);
       setNewMessage("");

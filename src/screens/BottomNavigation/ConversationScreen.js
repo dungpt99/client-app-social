@@ -15,6 +15,7 @@ import UserConversation from "../../components/UserConversation";
 
 export default function ConversationScreen({ navigation }) {
   const [conversations, setConversations] = useState([]);
+
   useFocusEffect(
     React.useCallback(() => {
       const getConversation = async () => {

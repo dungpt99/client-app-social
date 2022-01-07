@@ -6,6 +6,7 @@ import actions from "../../redux/actions";
 import store from "../../redux/store";
 import types from "../../redux/types";
 import { loginCall } from "../../apiCall";
+import { useSelector } from "react-redux";
 
 export default function Login({ navigation }) {
   const { dispatch } = store;

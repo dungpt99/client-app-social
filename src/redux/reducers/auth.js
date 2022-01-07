@@ -13,6 +13,8 @@ export default function (state = initial_state, action) {
       return { userData: action.payload };
     case types.LOGIN_FAILURE:
       return { userData: {} };
+    case types.CLEAR_REDUX_STATE:
+      return { userData: {} };
     default:
       return { ...state };
   }

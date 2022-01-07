@@ -1,13 +1,28 @@
 import React, { useState } from "react";
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Button,
+} from "react-native";
 import { useSelector } from "react-redux";
 import Post from "../../components/Post";
 import Share from "../../components/Share";
 import HomeScreen from "./HomeScreen";
 import { API_BASE_URL } from "../../config/urls";
+import store from "../../redux/store";
+import types from "../../redux/types";
+import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 
 export default function ProfileScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
+  const { dispatch } = store;
+  const handleLogout = async () => {
+    dispatch({ type: types.CLEAR_REDUX_STATE });
+  };
   return (
     <View style="styles.container">
       <ScrollView>
@@ -30,6 +45,9 @@ export default function ProfileScreen({ navigation }) {
         </View>
         <HomeScreen userId={userData.id} />
       </ScrollView>
+      <View style={styles.logout}>
+        <Button title="Logout" color={"#ccc"} onPress={handleLogout}></Button>
+      </View>
     </View>
   );
 }
@@ -62,5 +80,10 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+  },
+  logout: {
+    position: "absolute",
+    right: 0,
+    top: 0,
   },
 });

@@ -14,6 +14,7 @@ const Stack = createNativeStackNavigator();
 
 export default function Routes() {
   const userData = useSelector((state) => state.auth.userData);
+  console.log(userData);
   useState(async () => {
     console.log(await SecureStore.getItemAsync("accessToken"));
   }, []);
