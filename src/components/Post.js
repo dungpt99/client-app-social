@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  Button,
   TouchableOpacity,
 } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_BASE_URL } from "../config/urls";
-import moment from "moment";
 import TimeAgo from "./Time";
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { findLike, findLikeCurrent, createLike, removeLike } from "../api/like";
 
 export default function Post({ post }) {
   const [isLiked, setIsLiked] = useState(false);
@@ -21,7 +18,7 @@ export default function Post({ post }) {
   useFocusEffect(
     React.useCallback(() => {
       const fetchData = async () => {
-        const res = await axios.get(`${API_BASE_URL}/like/${post.id}`);
+        const res = await findLike(post.id);
         setLike(res.data.length);
       };
       fetchData();
@@ -31,7 +28,7 @@ export default function Post({ post }) {
   useFocusEffect(
     React.useCallback(() => {
       const fetchData = async () => {
-        const res = await axios.get(`${API_BASE_URL}/like/current/${post.id}`);
+        const res = await findLikeCurrent(post.id);
         if (Object.entries(res.data).length !== 0) {
           setIsLiked(true);
         }
@@ -41,12 +38,12 @@ export default function Post({ post }) {
   );
 
   const likeHandler = async () => {
-    if (isLiked) {
+    if (!isLiked) {
       try {
         const data = {
           postId: post.id,
         };
-        await axios.delete(`${API_BASE_URL}/like`, { data });
+        await createLike(data);
       } catch (error) {
         console.log(error);
       }
@@ -55,7 +52,7 @@ export default function Post({ post }) {
         const data = {
           postId: post.id,
         };
-        await axios.post(`${API_BASE_URL}/like`, data);
+        await removeLike({data});
       } catch (error) {
         console.log(error);
       }

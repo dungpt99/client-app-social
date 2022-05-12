@@ -1,30 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
-  Text,
-  FlatList,
   StyleSheet,
-  TextInput,
   ScrollView,
-  TouchableOpacity,
+  TouchableOpacity
 } from "react-native";
-import Share from "../../components/Share";
 import Post from "../../components/Post";
 import { useSelector } from "react-redux";
-import { API_BASE_URL } from "../../config/urls";
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { getProfile, getTimeLine } from '../../api/post'
+import Share from "../../components/Share";
 
 export default function HomeScreen({ userId, navigation }) {
-  const userData = useSelector((state) => state.auth.userData);
   const [posts, setPosts] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
       async function fetchData() {
-        const res = userId
-          ? await axios.get(`${API_BASE_URL}/post/profile/` + userId)
-          : await axios.get(`${API_BASE_URL}/post/timeline`);
+        const res = userId ? await getProfile(userId) : await getTimeLine();
         setPosts(
           res.data.sort((p1, p2) => {
             return new Date(p2.createdAt) - new Date(p1.createdAt);

@@ -1,6 +1,5 @@
-import axios from "axios";
-import { LOGIN } from "../../config/urls";
+import { signIn } from "../../api/auth";
 
 export function login(data) {
-  return axios.post(LOGIN, data);
+  return signIn(data);
 }

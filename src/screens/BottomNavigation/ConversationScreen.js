@@ -2,16 +2,12 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   View,
-  Text,
   FlatList,
   StyleSheet,
-  StatusBar,
-  Image,
   Pressable,
 } from "react-native";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/urls";
 import UserConversation from "../../components/UserConversation";
+import { findAllConversation } from "../../api/conversation";
 
 export default function ConversationScreen({ navigation }) {
   const [conversations, setConversations] = useState([]);
@@ -19,7 +15,7 @@ export default function ConversationScreen({ navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       const getConversation = async () => {
-        const res = await axios.get(`${API_BASE_URL}/conversation`);
+        const res = await findAllConversation({ page:1, pageSize: 10});
         setConversations(res.data);
       };
       getConversation();

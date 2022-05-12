@@ -8,21 +8,23 @@ import {
   Button,
 } from "react-native";
 import { useSelector } from "react-redux";
-import Post from "../../components/Post";
-import Share from "../../components/Share";
 import HomeScreen from "./HomeScreen";
 import { API_BASE_URL } from "../../config/urls";
 import store from "../../redux/store";
 import types from "../../redux/types";
-import * as SecureStore from "expo-secure-store";
-import axios from "axios";
+import { signOut } from "../../api/auth";
 
 export default function ProfileScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
   const { dispatch } = store;
-  const handleLogout = async () => {
-    dispatch({ type: types.CLEAR_REDUX_STATE });
+  const logout = async () => {
+    try {
+      await signOut(dispatch)
+    } catch (error) {
+      console.log(`logout error ${error}`);
+    }
   };
+  
   return (
     <View style="styles.container">
       <ScrollView>
@@ -46,7 +48,7 @@ export default function ProfileScreen({ navigation }) {
         <HomeScreen userId={userData.id} />
       </ScrollView>
       <View style={styles.logout}>
-        <Button title="Logout" color={"#ccc"} onPress={handleLogout}></Button>
+        <Button title="Logout" color={"red"} onPress={logout}></Button>
       </View>
     </View>
   );
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     height: 300,
   },
   imgCover: {
-    maxHeight: 250,
+    maxHeight: 200,
     width: "100%",
     resizeMode: "cover",
   },
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "50%",
     transform: [{ translateX: -50 }],
-    bottom: 25,
+    bottom: 30,
     textAlign: "center",
   },
   name: {

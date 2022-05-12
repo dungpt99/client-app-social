@@ -2,8 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { API_BASE_URL } from "../config/urls";
-import axios from "axios";
+import { findConversation } from "../api/conversation"
 
 export default function UserConversation({ data }) {
   const [receiver, setReceiver] = useState("");
@@ -12,10 +11,8 @@ export default function UserConversation({ data }) {
     React.useCallback(() => {
       const getUser = async () => {
         try {
-          const res = await axios.get(
-            `${API_BASE_URL}/conversation/user/` + data.id
-          );
-          const friend = res.data[0].users.find((m) => m.id !== userData.id);
+          const res = await findConversation(data.id);
+          const friend = res.data.users.find((m) => m.id !== userData.id);
           setReceiver(friend);
         } catch (error) {}
       };

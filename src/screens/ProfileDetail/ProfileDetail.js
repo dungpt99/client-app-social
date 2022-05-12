@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import HomeScreen from "../BottomNavigation/HomeScreen";
 import { API_BASE_URL } from "../../config/urls";
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { findAllFriend, createFriend, removeFriend } from "../../api/relation"
+import { createConversation } from "../../api/conversation"
 
 export default function ProfileDetail({ navigation, route }) {
   const { name, avatar, imgCover, id } = route.params;
@@ -22,7 +23,7 @@ export default function ProfileDetail({ navigation, route }) {
     React.useCallback(() => {
       const fetchFriend = async () => {
         try {
-          const res = await axios.get(`${API_BASE_URL}/friend`);
+          const res = await findAllFriend();
           res.data.forEach((e) => {
             if (e.id === id) {
               setFollowed(true);
@@ -39,17 +40,16 @@ export default function ProfileDetail({ navigation, route }) {
   const handleClick = async () => {
     if (!followed) {
       try {
-        const res = await axios.post(`${API_BASE_URL}/friend`, {
+        await createFriend({
           follow: id,
-        });
+        })
       } catch (error) {
         console.log(error);
       }
     } else {
       try {
-        const res = await axios.delete(`${API_BASE_URL}/friend`, {
-          data: { follow: user.id },
-        });
+        const data = { follow: id }
+        await removeFriend({ data });
       } catch (error) {
         console.log(error);
       }
@@ -59,9 +59,9 @@ export default function ProfileDetail({ navigation, route }) {
 
   const handleChat = async () => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/conversation`, {
+      const res = await createConversation({
         receiverId: id,
-      });
+      })
       console.log(res.data);
       if (Array.isArray(res.data)) {
         navigation.navigate("Conversation", res.data[0]);

@@ -1,31 +1,27 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
-  StatusBar,
   Image,
-  TouchableWithoutFeedback,
-  Button,
   Pressable,
 } from "react-native";
 import { API_BASE_URL } from "../../config/urls";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import { findAllUser } from "../../api/user";
 
 export default function PeopleScreen({ navigation }) {
   const [friends, setFriends] = useState([]);
   const userData = useSelector((state) => state.auth.userData);
-
   useFocusEffect(
     React.useCallback(() => {
       const getFriends = async () => {
         try {
-          const res = await axios.get(`${API_BASE_URL}/user`);
+          const res = await findAllUser({ page:1, pageSize: 10 });
           let listFriend = [];
-          res.data.forEach((element) => {
+          res.data.data.map((element) => {
             if (element.id !== userData.id) {
               listFriend.push(element);
             }
@@ -71,7 +67,7 @@ export default function PeopleScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: "90%",
+    height: "95%",
   },
   information: {
     flexDirection: "row",
@@ -83,15 +79,14 @@ const styles = StyleSheet.create({
     width: 45,
     resizeMode: "cover",
     borderRadius: 50,
-    marginRight: 5,
+    marginRight: 10,
     marginLeft: 5,
     borderWidth: 1,
     borderColor: "gray",
   },
   item: {
-    backgroundColor: "#f9c2ff",
+    backgroundColor: "#fff",
     padding: 20,
-    marginVertical: 8,
     flexDirection: "row",
     justifyContent: "space-between",
   },

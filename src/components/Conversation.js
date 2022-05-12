@@ -7,14 +7,14 @@ import {
   ScrollView,
   Image,
   TextInput,
-  TouchableWithoutFeedback,
 } from "react-native";
 import { API_BASE_URL } from "../config/urls";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Message from "./Message";
 import { useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import { findConversation } from "../api/conversation";
+import { createMessage, findMessage } from "../api/message";
 
 export default function Conversation({ navigation, route }) {
   const scrollRef = useRef();
@@ -28,10 +28,8 @@ export default function Conversation({ navigation, route }) {
     React.useCallback(() => {
       const getUser = async () => {
         try {
-          const res = await axios.get(
-            `${API_BASE_URL}/conversation/user/` + id
-          );
-          const friend = res.data[0].users.find((m) => m.id !== userData.id);
+          const res = await findConversation(id);
+          const friend = res.data.users.find((m) => m.id !== userData.id);
           setReceiver(friend);
         } catch (error) {}
       };
@@ -43,11 +41,10 @@ export default function Conversation({ navigation, route }) {
     React.useCallback(() => {
       const getMessage = async () => {
         try {
-          const res = await axios.get(`${API_BASE_URL}/messages/` + id);
+          const res = await findMessage(id);
           setMessages(res.data);
         } catch (error) {}
       };
-
       getMessage();
     }, [id])
   );
@@ -55,18 +52,16 @@ export default function Conversation({ navigation, route }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const newContent = {
-        content: newMessage,
-      };
+      const formData = new FormData();
+      formData.append('content', newMessage);
+      formData.append('conversationId', id);
 
-      const res = await axios.post(
-        `${API_BASE_URL}/messages/${id}`,
-        newContent
-      );
-
+      const res = await createMessage(formData);
       setMessages([...messages, res.data]);
       setNewMessage("");
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

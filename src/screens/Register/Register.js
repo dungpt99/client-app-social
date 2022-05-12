@@ -6,22 +6,16 @@ import {
   StatusBar,
   TextInput,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import { showError } from "../Login/HelperFunction";
-import { API_BASE_URL } from "../../config/urls";
-import axios from "axios";
+import axios from "../../utils/axios";
 import validator from "../../utils/validation";
 
 export default function Register({ navigation }) {
-  const [state, setState] = useState({
-    name: "",
-    isLoading: false,
-    email: "",
-    password: "",
-    repeatPassword: "",
-  });
-  const { name, isLoading, email, password, repeatPassword } = state;
-  const updateState = (data) => setState(() => ({ ...state, ...data }));
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
 
   const isValidData = () => {
     const error = validator({ name, email, password });
@@ -58,41 +52,40 @@ export default function Register({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.top}>
-        <Text style={styles.title}>Social</Text>
-        <Text style={styles.desc}>Connect to people around the world</Text>
-      </View>
-      <View style={styles.input}>
-        <Text style={styles.inputLabel}>Name:</Text>
+      <View style={styles.wrapper}>
         <TextInput
-          placeholder="Name"
-          style={styles.textInput}
-          onChangeText={(name) => updateState({ name })}
+          style={styles.input}
+          value={name}
+          placeholder="Enter name"
+          onChangeText={text => setName(text)}
         />
-        <Text style={styles.inputLabel}>Email:</Text>
+
         <TextInput
-          placeholder="Email"
-          textContentType="emailAddress"
-          style={styles.textInput}
-          onChangeText={(email) => updateState({ email })}
+          style={styles.input}
+          value={email}
+          placeholder="Enter email"
+          onChangeText={text => setEmail(text)}
         />
-        <Text style={styles.inputLabel}>Password:</Text>
+
         <TextInput
-          placeholder="Password"
-          secureTextEntry={true}
-          style={styles.textInput}
-          onChangeText={(password) => updateState({ password })}
+          style={styles.input}
+          value={password}
+          placeholder="Enter password"
+          onChangeText={text => setPassword(text)}
+          secureTextEntry
         />
-        <Text style={styles.inputLabel}>RepeatPassword:</Text>
-        <TextInput
-          placeholder="RepeatPassword"
-          secureTextEntry={true}
-          style={styles.textInput}
-          onChangeText={(repeatPassword) => updateState({ repeatPassword })}
+
+        <Button
+          title="Register"
+          onPress={onSignup}
         />
-      </View>
-      <View style={styles.signup}>
-        <Button title="Signup" onPress={onSignup}></Button>
+
+        <View style={{flexDirection: 'row', marginTop: 20}}>
+          <Text>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.link}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -103,23 +96,20 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight,
     backgroundColor: "#f7f3f3",
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  top: { marginBottom: 30 },
-  title: { fontSize: 26, fontWeight: "bold", textAlign: "center" },
-  desc: { fontSize: 20, textAlign: "center" },
-  input: { marginHorizontal: 80 },
-  inputLabel: { marginTop: 12, fontSize: 16, marginBottom: 10 },
-  textInput: {
-    width: 250,
-    height: 40,
+  wrapper: {
+    width: '80%',
+  },
+  input: {
+    marginBottom: 12,
     borderWidth: 1,
-    padding: 10,
-    fontSize: 20,
-    borderColor: "#333",
+    borderColor: '#bbb',
     borderRadius: 5,
+    paddingHorizontal: 14,
   },
-  signup: {
-    marginHorizontal: 120,
-    marginTop: 30,
+  link: {
+    color: 'blue',
   },
 });
