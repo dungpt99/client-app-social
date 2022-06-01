@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,14 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import { API_BASE_URL } from "../config/urls";
+import { API_BASE_URL } from "../../config/urls";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Message from "./Message";
+import Message from "../../components/Message";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
-import { findConversation } from "../api/conversation";
-import { createMessage, findMessage } from "../api/message";
+import { findConversation } from "../../api/conversation";
+import { createMessage, findMessage } from "../../api/message";
+import socket from "../../utils/socket";
 
 export default function Conversation({ navigation, route }) {
   const scrollRef = useRef();
@@ -23,30 +24,50 @@ export default function Conversation({ navigation, route }) {
   const [newMessage, setNewMessage] = useState("");
   const userData = useSelector((state) => state.auth.userData);
   const [receiver, setReceiver] = useState("");
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const getUser = async () => {
-        try {
-          const res = await findConversation(id);
-          const friend = res.data.users.find((m) => m.id !== userData.id);
-          setReceiver(friend);
-        } catch (error) {}
-      };
-      getUser();
-    }, [])
-  );
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  let count = 0;
 
   useFocusEffect(
     React.useCallback(() => {
       const getMessage = async () => {
         try {
-          const res = await findMessage(id);
-          setMessages(res.data);
-        } catch (error) {}
+          const message = await findMessage(id);
+          const conversation = await findConversation(id);
+          const friend = conversation.data.users.find((m) => m.id !== userData.id);
+          setReceiver("");
+          setMessages(null);
+          setReceiver(friend);
+          setMessages(message.data);
+        } catch (error) {
+          console.log(error);
+        }
       };
       getMessage();
+      socket.emit("addUser", userData.id);
     }, [id])
+  );
+
+  useEffect(() => {
+    socket.on("getMessage", (data) => {
+      setArrivalMessage({
+        user: { id: data.senderId },
+        content: data.content,
+      });
+    });
+  }, [count]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getMessage = async () => {
+        try {
+          arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+          setArrivalMessage(null);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getMessage();
+    }, [arrivalMessage])
   );
 
   const handleSubmit = async (e) => {
@@ -57,8 +78,22 @@ export default function Conversation({ navigation, route }) {
       formData.append('conversationId', id);
 
       const res = await createMessage(formData);
+      
+      socket.emit("sendMessage", {
+        senderId: userData.id,
+        receiverId: receiver.id,
+        content: newMessage,
+      });
+      socket.on("getMessage", (data) => {
+        setArrivalMessage(null);
+        setArrivalMessage({
+          user: { id: data.senderId },
+          content: data.content,
+        });
+      });
       setMessages([...messages, res.data]);
       setNewMessage("");
+      count +=1;
     } catch (error) {
       console.log(error);
     }
@@ -85,8 +120,8 @@ export default function Conversation({ navigation, route }) {
         }
       >
         {messages !== null
-          ? messages?.map((m) => (
-              <Message message={m} key={m.id} own={m.user.id === userData.id} />
+          ? messages?.map((m, index) => (
+              <Message message={m} key={index} own={m.user.id === userData.id} />
             ))
           : null}
       </ScrollView>

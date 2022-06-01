@@ -17,7 +17,7 @@ export default function UserConversation({ data }) {
         } catch (error) {}
       };
       getUser();
-    }, [])
+    }, [data])
   );
   return (
     <View style={styles.item}>

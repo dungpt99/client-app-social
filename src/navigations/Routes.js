@@ -7,13 +7,13 @@ import { useSelector } from "react-redux";
 import Register from "../screens/Register/Register";
 import Share from "../screens/Share/Share";
 import ProfileDetail from "../screens/ProfileDetail/ProfileDetail";
-import Conversation from "../components/Conversation";
+import Conversation from "../screens/ConversationDetail/Conversation";
+import Search from "../screens/Search/Search";
 
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
   const userData = useSelector((state) => state.auth.userData);
-
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -28,6 +28,7 @@ export default function Routes() {
         <Stack.Screen name="Share" component={Share} />
         <Stack.Screen name="Conversation" component={Conversation} />
         <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+        <Stack.Screen name="Search" component={Search} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -7,7 +7,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import ProfileScreen from "../screens/BottomNavigation/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
-
 export default function Tabs() {
   return (
     <Tab.Navigator

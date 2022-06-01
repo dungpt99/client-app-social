@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../config/urls';
 
 export const createPost = (data) => axios.post(`${API_BASE_URL}/posts`, data);
 
-export const findAllPost = () => axios.get(`${API_BASE_URL}/posts`);
+export const findAllPost = (query) => axios.get(`${API_BASE_URL}/posts`, {params : query });
 
 export const findPost = (id) => axios.get(`${API_BASE_URL}/posts/${id}`);
 

@@ -11,9 +11,9 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/urls";
 import { useSelector } from "react-redux";
+import { createPost } from "../../api/post";
+import { API_BASE_URL } from "../../config/urls";
 
 export default function Share({ navigation }) {
   const [image, setImage] = useState(null);
@@ -44,27 +44,27 @@ export default function Share({ navigation }) {
   };
 
   const handleCamera = async () => {
-    // try {
-    //   const granted = await PermissionsAndroid.request(
-    //     PermissionsAndroid.PERMISSIONS.CAMERA,
-    //     {
-    //       title: "Cool Photo App Camera Permission",
-    //       message:
-    //         "Cool Photo App needs access to your camera " +
-    //         "so you can take awesome pictures.",
-    //       buttonNeutral: "Ask Me Later",
-    //       buttonNegative: "Cancel",
-    //       buttonPositive: "OK",
-    //     }
-    //   );
-    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-    //     console.log("You can use the camera");
-    //   } else {
-    //     console.log("Camera permission denied");
-    //   }
-    // } catch (err) {
-    //   console.warn(err);
-    // }
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: "Cool Photo App Camera Permission",
+          message:
+            "Cool Photo App needs access to your camera " +
+            "so you can take awesome pictures.",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK",
+        }
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("You can use the camera");
+      } else {
+        console.log("Camera permission denied");
+      }
+    } catch (err) {
+      console.warn(err);
+    }
     let result = await ImagePicker.launchCameraAsync({
       quality: 1,
       allowsEditing: true,
@@ -79,25 +79,25 @@ export default function Share({ navigation }) {
   };
 
   const handleShare = async () => {
-    let localUri = image;
-    let filename = localUri.split("/").pop();
-
-    let match = /\.(\w+)$/.exec(filename);
-    let type = match ? `image/${match[1]}` : `image`;
-
     if (image) {
+      let localUri = image;
+      let filename = localUri.split("/").pop();
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
       const data = new FormData();
-      data.append("file", { uri: localUri, name: filename, type });
       data.append("desc", text);
+      data.append("files", { uri: localUri, name: filename, type });
       try {
-        await axios.post(`${API_BASE_URL}/post/uploads`, data);
+        await createPost(data);
         navigation.goBack();
       } catch (error) {
         console.log(error);
       }
     } else {
       try {
-        await axios.post(`${API_BASE_URL}/post`, { desc: text });
+        const data = new FormData();
+        data.append("desc", text);
+        await createPost(data);
         navigation.goBack();
       } catch (error) {
         console.log(error);
@@ -130,12 +130,6 @@ export default function Share({ navigation }) {
             onPress={handleChoosePhoto}
           />
           <Text style={styles.textIcon}>Ảnh</Text>
-          <MaterialCommunityIcons
-            name="emoticon"
-            color={"yellow"}
-            style={styles.icon}
-          />
-          <Text style={styles.textIcon}>Cảm xúc</Text>
           <MaterialCommunityIcons
             name="camera"
             style={styles.icon}

@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { showError } from "../Login/HelperFunction";
-import axios from "../../utils/axios";
 import validator from "../../utils/validation";
+import { signUp } from '../../api/user'
 
 export default function Register({ navigation }) {
   const [name, setName] = useState(null);
@@ -29,24 +29,17 @@ export default function Register({ navigation }) {
   const onSignup = async () => {
     const checkValid = isValidData();
     if (checkValid) {
-      if (repeatPassword != password) {
-        showError("Password don't match");
-      } else {
-        updateState({ isLoading: false });
         const user = {
           name,
           email,
           password,
         };
         try {
-          const res = await axios.post(`${API_BASE_URL}/user`, user);
-          updateState({ isLoading: true });
+          const res = await signUp(user);
           navigation.goBack();
         } catch (error) {
           console.log(error);
-          updateState({ isLoading: false });
         }
-      }
     }
   };
 

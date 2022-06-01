@@ -1,30 +1,36 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
   StyleSheet,
   Pressable,
+  ScrollView,
+  Text
 } from "react-native";
 import UserConversation from "../../components/UserConversation";
 import { findAllConversation } from "../../api/conversation";
 
 export default function ConversationScreen({ navigation }) {
   const [conversations, setConversations] = useState([]);
-
   useFocusEffect(
     React.useCallback(() => {
       const getConversation = async () => {
         const res = await findAllConversation({ page:1, pageSize: 10});
+        setConversations([])
         setConversations(res.data);
       };
       getConversation();
     }, [])
   );
+    
+  const Item = ({ data }) => (
+    <UserConversation data={data}/>
+  );
 
   const renderItem = ({ item }) => (
     <Pressable onPress={() => navigation.navigate("Conversation", item)}>
-      <UserConversation data={item} />
+      <Item data={item} />
     </Pressable>
   );
 

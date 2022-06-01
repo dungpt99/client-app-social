@@ -98,7 +98,7 @@ export default function ProfileDetail({ navigation, route }) {
             <Button title="Chat" onPress={handleChat}></Button>
           </View>
         </View>
-        <HomeScreen userId={id} />
+        <HomeScreen userId={id}/>
       </ScrollView>
     </View>
   );

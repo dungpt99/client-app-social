@@ -13,7 +13,6 @@ import Share from "../../components/Share";
 
 export default function HomeScreen({ userId, navigation }) {
   const [posts, setPosts] = useState([]);
-
   useFocusEffect(
     React.useCallback(() => {
       async function fetchData() {
@@ -33,9 +32,12 @@ export default function HomeScreen({ userId, navigation }) {
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={shareScreen} activeOpacity={1}>
-        <Share style={styles.share} />
-      </TouchableOpacity>
+      {
+        !userId && 
+        (<TouchableOpacity onPress={shareScreen} activeOpacity={1}>
+          <Share style={styles.share} />
+        </TouchableOpacity>)
+      }
       <ScrollView scrollsToTop={true}>
         {posts.map((item) => (
           <View key={item.id}>

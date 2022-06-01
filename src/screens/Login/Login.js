@@ -4,7 +4,6 @@ import validator from "../../utils/validation";
 import { showError } from "./HelperFunction";
 import store from "../../redux/store";
 import { signIn } from "../../api/auth";
-
 export default function Login({ navigation }) {
   const { dispatch } = store;
   const [email, setEmail] = useState(null);

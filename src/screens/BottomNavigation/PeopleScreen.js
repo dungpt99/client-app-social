@@ -7,13 +7,18 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  TextInput,
+  Button,
+  Picker
 } from "react-native";
 import { API_BASE_URL } from "../../config/urls";
 import { useSelector } from "react-redux";
 import { findAllUser } from "../../api/user";
 
-export default function PeopleScreen({ navigation }) {
+const People = function PeopleScreen({ navigation }) {
   const [friends, setFriends] = useState([]);
+  const [address, setAddress] = useState('');
+  const [coin, setCoin] = useState('');
   const userData = useSelector((state) => state.auth.userData);
   useFocusEffect(
     React.useCallback(() => {
@@ -54,8 +59,43 @@ export default function PeopleScreen({ navigation }) {
       <Item data={item} />
     </Pressable>
   );
+
+  const send = () => {
+    console.log(address);
+    console.log(coin);
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.sendCoinContainer}>
+        <View style={styles.inputCoinContainer}>
+          <Text>
+            Coin:
+          </Text>
+          <TextInput placeholder="Input coin" style={styles.inputCoin} onChangeText={(text) => setCoin(text)}/>
+        </View>
+        <View style={styles.pickerContainer}>
+          <Text>
+            To:
+          </Text>
+          <View >
+          <Picker
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) =>
+              setAddress(itemValue)
+            }>
+            {
+              friends.map(e => 
+                (<Picker.Item label={e.name} value={e.address} key={e.id}/>)
+              )
+            }
+          </Picker>
+          </View>
+        </View>
+        <View>
+          <Button title="Send" onPress={send}/>
+        </View>
+      </View>
       <FlatList
         data={friends}
         renderItem={renderItem}
@@ -68,6 +108,38 @@ export default function PeopleScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     height: "95%",
+  },
+  sendCoinContainer: {
+    flexDirection: "row",
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 15,
+    backgroundColor: "#fff",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  inputCoinContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  inputCoin: {
+    borderWidth: 1,
+    borderColor: "gray",
+    fontSize: 14,
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginLeft: 10,
+    borderRadius: 5
+  },
+  pickerContainer: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  picker: {
+    width: 100,
+    height: 50,
+    color: "black"
   },
   information: {
     flexDirection: "row",
@@ -94,3 +166,5 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
+
+export default React.memo(People)

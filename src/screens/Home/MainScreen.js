@@ -6,7 +6,7 @@ import SearchBar from "../../components/SearchBar"
 export default function MainScreen({ navigation }) {
   return (
     <Screen>
-      <SearchBar />
+      <SearchBar navigation={navigation}/>
       <Tabs />
     </Screen>
   );
